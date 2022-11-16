@@ -1,0 +1,6 @@
+const WS_MESSAGE_METHODS = {
+  MESSAGE: "MESSAGE",
+  CONNECTION: "CONNECTION",
+};
+
+module.exports = WS_MESSAGE_METHODS;

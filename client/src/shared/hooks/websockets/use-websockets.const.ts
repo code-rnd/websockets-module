@@ -11,6 +11,11 @@ export enum WS_STATUS_CONNECT {
   CLOSED,
 }
 
+export enum WS_MESSAGE_METHODS {
+  MESSAGE = "MESSAGE",
+  CONNECTION = "CONNECTION",
+}
+
 export const websocket = new WebSocket(
   environment.REACT_APP_WS_URL || "ws://localhost:5001"
 );
