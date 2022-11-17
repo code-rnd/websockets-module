@@ -28,23 +28,36 @@ app.ws("/", (ws, req) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Сервер стартовал, порт: " + PORT);
+  console.log("Сокет на сервере открыт: " + PORT);
 });
 
 const connectionHandler = (ws, msg) => {
-  console.log("connectionHandler: ", msg);
+  console.log(WS_MESSAGE_METHODS.CONNECTION + ": ", msg);
   ws.id = msg.id;
   broadcastConnection(ws, msg);
 };
 const broadcastConnection = (ws, msg) => {
-  console.log("broadcastConnection: ", msg);
-
   aWss.clients.forEach((client) => {
-    if (client.id === msg.id) {
-      client.send(`Пользователь ${msg.userName} - подключился`);
-    }
+    const data = {
+      id: msg.id,
+      user: msg.user,
+      method: WS_MESSAGE_METHODS.CONNECTION,
+    };
+    client.send(JSON.stringify(data));
   });
 };
 const messageHandler = (ws, msg) => {
-  console.log("messageHandler: ", msg);
+  console.log(WS_MESSAGE_METHODS.MESSAGE + ": ", msg);
+  broadCastMessage(ws, msg);
+};
+const broadCastMessage = (ws, msg) => {
+  aWss.clients.forEach((client) => {
+    const data = {
+      id: msg.id,
+      user: msg.user,
+      method: WS_MESSAGE_METHODS.MESSAGE,
+      text: msg.text,
+    };
+    client.send(JSON.stringify(data));
+  });
 };

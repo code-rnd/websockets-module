@@ -1,51 +1,33 @@
-import { useCallback, useMemo } from "react";
-
+import { useState } from "react";
+import { MessageModel } from "../../../components";
 import { websocket, WS_MESSAGE_METHODS } from "./use-websockets.const";
-import { checkConnectStatus, checkOpenStatus } from "./use-websockets.utils";
+import { getStatus } from "./use-websockets.utils";
 
 export const useWebsockets = () => {
-  /** Слушаем статус подключения */
-  const onOpen = useCallback(() => {
+  const [messages, setMessages] = useState<MessageModel[]>([]);
+
+  const onopen = (message: MessageModel) => {
     websocket.onopen = (ev) => {
-      sendMessage({
-        id: 1,
-        userName: "Harry",
-        method: WS_MESSAGE_METHODS.CONNECTION,
-      });
+      websocket.send(JSON.stringify(message));
+      console.log("Сокет открыт: ", getStatus(websocket.readyState));
     };
-  }, []);
+  };
 
-  /** Слушаем сообщения */
-  const getMessage = useCallback(() => {
-    websocket.onmessage = (ev) => {
-      if (checkOpenStatus(websocket.readyState)) {
-        console.log("Сообщение от сервера: ", { data: ev.data });
-      }
-    };
-  }, []);
+  websocket.onmessage = (ev) => {
+    const data: MessageModel = JSON.parse(ev.data);
+    if (data.method === WS_MESSAGE_METHODS.MESSAGE) {
+      setMessages((prev) => [...prev, data]);
+    }
+    console.log(data);
+  };
 
-  /** Слушаем статус подключения */
-  const onClose = useCallback(() => {
-    websocket.onclose = (ev) => {
-      console.log("Close: ", { ev });
-    };
-  }, []);
+  websocket.onclose = (ev) => {
+    console.log("Сокет закрыт: ", getStatus(websocket.readyState));
+  };
 
-  /** Отправляем данные */
-  const sendMessage = useCallback(
-    <T extends { method: WS_MESSAGE_METHODS; userName: string; id: number }>(
-      data: T
-    ) => {
-      if (checkOpenStatus(websocket.readyState)) {
-        websocket.send(JSON.stringify(data));
-      }
-    },
-    []
-  );
+  const send = (message: MessageModel) => {
+    websocket.send(JSON.stringify(message));
+  };
 
-  const isConnect = useMemo(() => checkConnectStatus(websocket.readyState), []);
-
-  const isOpen = useMemo(() => checkOpenStatus(websocket.readyState), []);
-
-  return { onOpen, getMessage, onClose, sendMessage, isConnect, isOpen };
+  return { messages, onopen, send };
 };

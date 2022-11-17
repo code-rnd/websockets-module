@@ -1,0 +1,20 @@
+.container {
+  input {
+    position: fixed;
+    left: 2rem;
+    right: 2rem;
+    bottom: 2rem;
+    padding: 1rem;
+  }
+}
+
+.list {
+  position: fixed;
+  bottom: calc(52px + 4rem);
+  left: 2rem;
+  right: 2rem;
+}
+
+.item {
+  padding: 0.2rem;
+}
