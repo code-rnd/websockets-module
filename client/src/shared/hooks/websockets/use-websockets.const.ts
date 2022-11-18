@@ -14,6 +14,8 @@ export enum WS_STATUS_CONNECT {
 export enum WS_MESSAGE_METHODS {
   MESSAGE = "MESSAGE",
   CONNECTION = "CONNECTION",
+  TYPING_START = "TYPING_START",
+  TYPING_END = "TYPING_END",
 }
 
 export const websocket = new WebSocket(

@@ -20,6 +20,14 @@ app.ws("/", (ws, req) => {
         messageHandler(ws, msg);
         break;
 
+      case WS_MESSAGE_METHODS.TYPING_START:
+        typingStartHandler(ws, msg);
+        break;
+
+      case WS_MESSAGE_METHODS.TYPING_END:
+        typingEndHandler(ws, msg);
+        break;
+
       default:
         console.log("Default: ", msg.method);
         break;
@@ -32,22 +40,21 @@ app.listen(PORT, () => {
 });
 
 const connectionHandler = (ws, msg) => {
-  console.log(WS_MESSAGE_METHODS.CONNECTION + ": ", msg);
   ws.id = msg.id;
-  broadcastConnection(ws, msg);
+  bcConnection(ws, msg);
 };
-const broadcastConnection = (ws, msg) => {
+const bcConnection = (ws, msg) => {
   aWss.clients.forEach((client) => {
     const data = {
       id: msg.id,
       user: msg.user,
       method: WS_MESSAGE_METHODS.CONNECTION,
+      date: msg.date,
     };
     client.send(JSON.stringify(data));
   });
 };
 const messageHandler = (ws, msg) => {
-  console.log(WS_MESSAGE_METHODS.MESSAGE + ": ", msg);
   broadCastMessage(ws, msg);
 };
 const broadCastMessage = (ws, msg) => {
@@ -56,8 +63,47 @@ const broadCastMessage = (ws, msg) => {
       id: msg.id,
       user: msg.user,
       method: WS_MESSAGE_METHODS.MESSAGE,
+      date: msg.date,
       text: msg.text,
     };
     client.send(JSON.stringify(data));
+  });
+};
+
+const typingStartHandler = (ws, msg) => {
+  bcTypingStart(ws, msg);
+};
+
+const bcTypingStart = (ws, msg) => {
+  aWss.clients.forEach((client) => {
+    if (client.id !== msg.id) {
+      const data = {
+        id: msg.id,
+        user: msg.user,
+        method: WS_MESSAGE_METHODS.TYPING_START,
+        date: msg.date,
+        text: msg.text,
+      };
+      client.send(JSON.stringify(data));
+    }
+  });
+};
+
+const typingEndHandler = (ws, msg) => {
+  bcTypingEnd(ws, msg);
+};
+
+const bcTypingEnd = (ws, msg) => {
+  aWss.clients.forEach((client) => {
+    if (client.id !== msg.id) {
+      const data = {
+        id: msg.id,
+        user: msg.user,
+        method: WS_MESSAGE_METHODS.TYPING_END,
+        date: msg.date,
+        text: msg.text,
+      };
+      client.send(JSON.stringify(data));
+    }
   });
 };

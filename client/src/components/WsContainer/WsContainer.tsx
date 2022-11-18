@@ -1,19 +1,14 @@
-import {
-  CSSProperties,
-  FC,
-  useCallback,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { FC, useCallback, useEffect, useLayoutEffect, useState } from "react";
 
 import { useWebsockets, WS_MESSAGE_METHODS } from "../../shared";
 
 import s from "./WsContainer.module.scss";
 import { MessageModel } from "./WsContainer.model";
 import { rndHash } from "./WsContainer.const";
+import { Chat, Form, TypingLabel } from "../Chat";
 
 export const WsContainer: FC = () => {
-  const { messages, onopen, send } = useWebsockets();
+  const { messages, typingUser, onopen, send } = useWebsockets();
   const [text, setText] = useState("");
   const [name, setName] = useState("");
 
@@ -23,19 +18,58 @@ export const WsContainer: FC = () => {
     id,
     user: name,
     method: WS_MESSAGE_METHODS.CONNECTION,
+    date: new Date(),
   });
 
-  const onSubmit = useCallback(() => {
+  const onSendMessage = useCallback(() => {
     const message: MessageModel = {
       id,
       user: name,
       method: WS_MESSAGE_METHODS.MESSAGE,
+      date: new Date(),
       text,
     };
 
     send(message);
     setText("");
   }, [text, name]);
+
+  const onSendTypingStart = useCallback(() => {
+    const message: MessageModel = {
+      id,
+      user: name,
+      method: WS_MESSAGE_METHODS.TYPING_START,
+      date: new Date(),
+      text,
+    };
+
+    send(message);
+  }, [text, name]);
+
+  const onSendTypingEnd = useCallback(() => {
+    const message: MessageModel = {
+      id,
+      user: name,
+      method: WS_MESSAGE_METHODS.TYPING_END,
+      date: new Date(),
+      text,
+    };
+
+    send(message);
+  }, [text, name]);
+
+  useEffect(() => {
+    if (!text) {
+      onSendTypingEnd();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      onSendTypingStart();
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [text, name, onSendTypingStart, onSendTypingEnd]);
 
   useLayoutEffect(() => {
     const userName = window.prompt("Your name?");
@@ -44,29 +78,9 @@ export const WsContainer: FC = () => {
 
   return (
     <div className={s.container}>
-      <div className={s.list}>
-        {messages.map((item, key) => {
-          const isHost = item.id === id;
-          const title = isHost ? `${item.text}` : `${item.user}: ${item.text}`;
-          const style: CSSProperties = isHost ? { textAlign: "right" } : {};
-
-          return (
-            <div className={s.item} style={style} key={key}>
-              {title}
-            </div>
-          );
-        })}
-      </div>
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.currentTarget.value)}
-        onKeyPress={(e) => {
-          if (e.code === "Enter" && !!text) {
-            onSubmit();
-          }
-        }}
-      />
+      <Chat userId={id} messages={messages} />
+      <TypingLabel typingUser={typingUser} />
+      <Form text={text} setText={setText} onSubmit={onSendMessage} />
     </div>
   );
 };

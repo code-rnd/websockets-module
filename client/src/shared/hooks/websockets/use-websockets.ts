@@ -5,6 +5,7 @@ import { getStatus } from "./use-websockets.utils";
 
 export const useWebsockets = () => {
   const [messages, setMessages] = useState<MessageModel[]>([]);
+  const [typingUser, setTypingUser] = useState<MessageModel>();
 
   const onopen = (message: MessageModel) => {
     websocket.onopen = (ev) => {
@@ -18,7 +19,12 @@ export const useWebsockets = () => {
     if (data.method === WS_MESSAGE_METHODS.MESSAGE) {
       setMessages((prev) => [...prev, data]);
     }
-    console.log(data);
+    if (data.method === WS_MESSAGE_METHODS.TYPING_START) {
+      setTypingUser(data);
+    }
+    if (data.method === WS_MESSAGE_METHODS.TYPING_END) {
+      setTypingUser(undefined);
+    }
   };
 
   websocket.onclose = (ev) => {
@@ -26,8 +32,10 @@ export const useWebsockets = () => {
   };
 
   const send = (message: MessageModel) => {
-    websocket.send(JSON.stringify(message));
+    if (websocket.readyState === 1) {
+      websocket.send(JSON.stringify(message));
+    }
   };
 
-  return { messages, onopen, send };
+  return { messages, typingUser, onopen, send };
 };

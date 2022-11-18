@@ -1,0 +1,43 @@
+.message {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+
+  margin-bottom: 6px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.content {
+  position: relative;
+  color: white;
+  width: max-content;
+  background-color: #1A212A;
+
+  padding: 3px 45px 3px 6px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.time {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  color: #7c8c9c;
+  font-size: 12px;
+}
+
+.isHost {
+  justify-content: start;
+  .content {
+    background-color: #2B5278;
+  }
+}
+
+.hostName {
+  font-size: 14px;
+  color: #65B3EB;
+}
+

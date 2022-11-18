@@ -1,0 +1,23 @@
+.typingLabel {
+  height: 3%;
+
+  font-size: 12px;
+  color: #3B5B7E;
+
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  animation: 2s ease infinite pulse;
+}
+
+@keyframes pulse {
+  0% {
+    color: #242C39;
+  }
+  50% {
+    color: #3B5B7E;
+  }
+  100% {
+    color: #242C39;
+  }
+}
