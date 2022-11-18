@@ -5,4 +5,4 @@ const WS_MESSAGE_METHODS = {
   TYPING_END: "TYPING_END",
 };
 
-module.exports = WS_MESSAGE_METHODS;
+module.exports = { WS_MESSAGE_METHODS };

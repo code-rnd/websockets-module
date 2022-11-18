@@ -7,6 +7,10 @@
   padding: 0 10px;
   box-sizing: border-box;
 
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
   animation: 2s ease infinite pulse;
 }
 
