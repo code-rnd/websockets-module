@@ -1,5 +1,3 @@
-import { environment } from "../../constants";
-
 export enum WS_STATUS_CONNECT {
   /** Сокет создан. Соединение еще не открыто */
   CONNECTING = "CONNECTING",
@@ -10,14 +8,3 @@ export enum WS_STATUS_CONNECT {
   /** Соединение закрыто или не может быть открыто */
   CLOSED = "CLOSED",
 }
-
-export enum WS_MESSAGE_METHODS {
-  MESSAGE = "MESSAGE",
-  CONNECTION = "CONNECTION",
-  TYPING_START = "TYPING_START",
-  TYPING_END = "TYPING_END",
-}
-
-export const websocket = new WebSocket(
-  environment.REACT_APP_WS_URL || "ws://localhost:5001"
-);

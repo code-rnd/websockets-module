@@ -7,6 +7,7 @@ export const aWss = WSserver.getWss();
 
 import {
   connectionHandler,
+  disconnectionHandler,
   messageHandler,
   typingEndHandler,
   typingStartHandler,
@@ -31,6 +32,10 @@ app.ws("/", (ws, req) => {
 
       case WS_MESSAGE_METHODS.TYPING_END:
         typingEndHandler(ws, msg);
+        break;
+
+      case WS_MESSAGE_METHODS.DISCONNECTION:
+        disconnectionHandler(ws, msg);
         break;
 
       default:

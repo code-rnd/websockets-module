@@ -1,4 +1,4 @@
-import { WS_MESSAGE_METHODS } from "../../shared";
+import { WS_MESSAGE_METHODS } from "../../api/controllers";
 
 export interface MessageModel {
   userId: string;

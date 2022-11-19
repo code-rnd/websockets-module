@@ -1,9 +1,16 @@
 import React from "react";
 
-import { WsContainer } from "./components";
+import { Chat, Form, TypingLabel } from "./components";
+import { Layout } from "./shared";
 
 import "./App.style.scss";
 
 export const App = () => {
-  return <WsContainer />;
+  return (
+    <Layout>
+      <Chat />
+      <TypingLabel />
+      <Form />
+    </Layout>
+  );
 };

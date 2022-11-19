@@ -1,12 +1,49 @@
-import { FC, memo } from "react";
+import {
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
+
+import { apiWebsockets } from "../../../../api";
+
+import { WS_MESSAGE_METHODS } from "../../../../api/controllers";
 
 import s from "./Form.module.scss";
 
-export const Form: FC<{
-  text: string;
-  setText: any;
-  onSubmit: () => void;
-}> = memo(({ text, setText, onSubmit }) => {
+export const Form: FC = memo(() => {
+  const [text, setText] = useState("");
+  const [name, setName] = useState("Codernd");
+
+  const sendMessageHandle = useCallback((method: WS_MESSAGE_METHODS) => {
+    apiWebsockets.postMessage({
+      messageId: "messageId_123",
+      sessionId: "sessionId_123",
+      method,
+      date: new Date(),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!text) {
+      sendMessageHandle(WS_MESSAGE_METHODS.TYPING_END);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      sendMessageHandle(WS_MESSAGE_METHODS.TYPING_START);
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [text, name, sendMessageHandle]);
+
+  useLayoutEffect(() => {
+    // const userName = window.prompt("Your name?");
+    // setName(userName || rndHash);
+  }, []);
+
   return (
     <div className={s.form}>
       <input
@@ -17,7 +54,7 @@ export const Form: FC<{
         }}
         onKeyPress={(e) => {
           if (e.code === "Enter" && !!text) {
-            onSubmit();
+            sendMessageHandle(WS_MESSAGE_METHODS.MESSAGE);
           }
         }}
       />

@@ -1,6 +1,6 @@
-import { WS_STATUS_CONNECT } from "./use-websockets.const";
+import { WS_STATUS_CONNECT } from "./web-sockets.enum";
 
-export const getStatus = (status: number): WS_STATUS_CONNECT => {
+export const getSocketStatus = (status: number): WS_STATUS_CONNECT => {
   switch (status) {
     case 0:
       return WS_STATUS_CONNECT.CONNECTING;

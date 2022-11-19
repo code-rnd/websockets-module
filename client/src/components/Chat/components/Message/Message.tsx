@@ -7,7 +7,6 @@ import { cn } from "../../../../shared/utils";
 import { dateTimeFormatOptions } from "../../../../shared";
 
 export const Message: FC<MessageProps> = memo(({ message, isHost }) => {
-  console.log(message);
   const text = isHost ? (
     `${message.text}`
   ) : (
