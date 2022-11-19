@@ -1,10 +1,3 @@
-const { connectionHandler } = require("./api-connection");
-const { messageHandler } = require("./api-message");
-const { typingEndHandler, typingStartHandler } = require("./api-typing");
-
-module.exports = {
-  connectionHandler,
-  messageHandler,
-  typingStartHandler,
-  typingEndHandler,
-};
+export * from "./api-connection.js";
+export * from "./api-message.js";
+export * from "./api-typing.js";

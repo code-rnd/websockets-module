@@ -15,16 +15,18 @@ export const WsContainer: FC = () => {
   const id = rndHash;
 
   onopen({
-    id,
+    userId: id,
     user: name,
+    messageId: (+new Date()).toString(16),
     method: WS_MESSAGE_METHODS.CONNECTION,
     date: new Date(),
   });
 
   const onSendMessage = useCallback(() => {
     const message: MessageModel = {
-      id,
+      userId: id,
       user: name,
+      messageId: (+new Date()).toString(16),
       method: WS_MESSAGE_METHODS.MESSAGE,
       date: new Date(),
       text,
@@ -36,8 +38,9 @@ export const WsContainer: FC = () => {
 
   const onSendTypingStart = useCallback(() => {
     const message: MessageModel = {
-      id,
+      userId: id,
       user: name,
+      messageId: (+new Date()).toString(16),
       method: WS_MESSAGE_METHODS.TYPING_START,
       date: new Date(),
       text,
@@ -48,8 +51,9 @@ export const WsContainer: FC = () => {
 
   const onSendTypingEnd = useCallback(() => {
     const message: MessageModel = {
-      id,
+      userId: id,
       user: name,
+      messageId: (+new Date()).toString(16),
       method: WS_MESSAGE_METHODS.TYPING_END,
       date: new Date(),
       text,

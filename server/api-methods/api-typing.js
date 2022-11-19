@@ -1,15 +1,15 @@
-const { aWss } = require("../app");
-const { WS_MESSAGE_METHODS } = require("../constants/websockets.const");
+import { aWss } from "../index.js";
+import { WS_MESSAGE_METHODS } from "../constants/index.js";
 
-const typingStartHandler = (ws, msg) => {
+export const typingStartHandler = (ws, msg) => {
   broadcastTypingStart(ws, msg);
 };
 
 const broadcastTypingStart = (ws, msg) => {
   aWss.clients.forEach((client) => {
-    if (client.id !== msg.id) {
+    if (client.id !== msg.userId) {
       const data = {
-        id: msg.id,
+        userId: msg.userId,
         user: msg.user,
         method: WS_MESSAGE_METHODS.TYPING_START,
         date: msg.date,
@@ -20,16 +20,17 @@ const broadcastTypingStart = (ws, msg) => {
   });
 };
 
-const typingEndHandler = (ws, msg) => {
+export const typingEndHandler = (ws, msg) => {
   broadcastTypingEnd(ws, msg);
 };
 
 const broadcastTypingEnd = (ws, msg) => {
   aWss.clients.forEach((client) => {
-    if (client.id !== msg.id) {
+    if (client.id !== msg.userId) {
       const data = {
-        id: msg.id,
+        userId: msg.userId,
         user: msg.user,
+        messageId: msg.messageId,
         method: WS_MESSAGE_METHODS.TYPING_END,
         date: msg.date,
         text: msg.text,
@@ -38,5 +39,3 @@ const broadcastTypingEnd = (ws, msg) => {
     }
   });
 };
-
-module.exports = { typingStartHandler, typingEndHandler };

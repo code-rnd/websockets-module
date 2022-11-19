@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 
 import s from "./Form.module.scss";
 
@@ -6,7 +6,7 @@ export const Form: FC<{
   text: string;
   setText: any;
   onSubmit: () => void;
-}> = ({ text, setText, onSubmit }) => {
+}> = memo(({ text, setText, onSubmit }) => {
   return (
     <div className={s.form}>
       <input
@@ -23,4 +23,4 @@ export const Form: FC<{
       />
     </div>
   );
-};
+});

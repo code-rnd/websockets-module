@@ -11,7 +11,7 @@
   justify-content: start;
   align-items: center;
 
-  animation: 2s ease infinite pulse;
+  animation: 1.5s ease infinite pulse;
 }
 
 @keyframes pulse {
@@ -19,7 +19,7 @@
     color: #242C39;
   }
   50% {
-    color: #3B5B7E;
+    color: #356ba2;
   }
   100% {
     color: #242C39;

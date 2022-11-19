@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 
 import s from "./Message.module.scss";
 
@@ -6,7 +6,8 @@ import { MessageProps } from "./Message.model";
 import { cn } from "../../../../shared/utils";
 import { dateTimeFormatOptions } from "../../../../shared";
 
-export const Message: FC<MessageProps> = ({ message, isHost }) => {
+export const Message: FC<MessageProps> = memo(({ message, isHost }) => {
+  console.log(message);
   const text = isHost ? (
     `${message.text}`
   ) : (
@@ -28,4 +29,4 @@ export const Message: FC<MessageProps> = ({ message, isHost }) => {
       </div>
     </div>
   );
-};
+});
