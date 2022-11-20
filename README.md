@@ -13,9 +13,12 @@
 
 
 # `client`
-Инструменты: `react` / `ts` / `hooks` / `redux` / `scss modules` / `axios` / `reduxjs-toolkit` / `websockets`
+Инструменты: `react` / `ts` / `hooks` / `scss modules` / `react-query` / `websockets`
 
 Как развернуть проект:
 ветка `main` => `git clone` => `cd client` => `npm i` => `npm run start`
 
-# Demo: `none`
+# Demo: 
+
+https://user-images.githubusercontent.com/54660879/202916660-fcbfeb10-e026-4f89-9e40-8b266ec0bd6b.MP4
+
