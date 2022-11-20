@@ -35,6 +35,14 @@ export const Message: FC<MessageProps> = memo(
             {isNewUser ? `${message.user} joined the chat` : text}
           </div>
           <div className={s.time}>{dateTime}</div>
+          {!isHost && !isNewUser && (
+            <div
+              className={s.avatar}
+              style={{ backgroundColor: message.color }}
+            >
+              {message.user.charAt(0)}
+            </div>
+          )}
         </div>
       </div>
     );

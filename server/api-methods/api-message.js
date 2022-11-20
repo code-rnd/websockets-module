@@ -13,6 +13,7 @@ const broadcastMessage = (ws, msg) => {
       method: WS_MESSAGE_METHODS.MESSAGE,
       date: msg.date,
       text: msg.text,
+      color: msg.color,
     };
     client.send(JSON.stringify(data));
   });

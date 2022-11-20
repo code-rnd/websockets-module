@@ -3,34 +3,36 @@ import { useQuery } from "react-query";
 
 import { Chat, Form, TypingLabel, MessageModel } from "../Chat";
 import { chatApi, WS_MESSAGE_METHODS } from "../../api";
-import { rndHash } from "../../shared";
 import { useMessages } from "./hooks";
 
 /** TODO: Затипизировать */
-const getMessages = (e: any) => {
+export const selectorMessages = (e: any) => {
   return e.meta;
 };
-
+export const selectorUser = (e: any) => {
+  return e.meta;
+};
 /** TODO: вьюха для теста, все перевести в редакс или react-квери */
 export const View: FC = memo(() => {
   useMessages();
-  const messagesQuery = useQuery("pack/Message", getMessages);
+  const messagesQuery = useQuery("pack/Message", selectorMessages);
   const messages = (messagesQuery.data as MessageModel[]) || [];
 
-  const name = rndHash + "_salt";
+  const userDtoQuery = useQuery("form/User", selectorUser);
+  const userDto = userDtoQuery?.data || ({} as any);
 
   const [text, setText] = useState("");
 
   const sendMessageHandler = useCallback(
     (method: WS_MESSAGE_METHODS) => {
-      console.log("TUT");
       const message: MessageModel = {
-        userId: name,
-        user: name,
+        userId: userDto.id,
+        user: userDto.name,
         messageId: (+new Date()).toString(16),
         method,
         date: new Date(),
         text,
+        color: userDto.color,
       };
 
       chatApi.postMessage<MessageModel>(message);
@@ -38,7 +40,7 @@ export const View: FC = memo(() => {
         setText("");
       }
     },
-    [name, text]
+    [userDto, text]
   );
 
   useEffect(() => {
@@ -50,14 +52,14 @@ export const View: FC = memo(() => {
 
     interval = setInterval(() => {
       sendMessageHandler(WS_MESSAGE_METHODS.TYPING_START);
-    }, 500);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [text, sendMessageHandler]);
 
   return (
     <>
-      <Chat messages={messages} userId={name} />
+      <Chat messages={messages} userId={userDto.id} />
       <TypingLabel />
       <Form text={text} setText={setText} onSubmit={sendMessageHandler} />
     </>

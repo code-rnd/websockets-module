@@ -3,20 +3,22 @@ import { useQueryClient } from "react-query";
 
 import { chatApi, WS_MESSAGE_METHODS } from "../../../api";
 import { MessageModel } from "../../Chat";
-import { rndHash } from "../../../shared";
+import { getUserDto } from "../../../shared/mocked";
 
 export const useMessages = () => {
   const queryClient = useQueryClient();
 
   useLayoutEffect(() => {
-    const rnd = rndHash + "_salt";
-    void queryClient.setQueriesData<string>("form/UserName", () => rnd);
+    const userDto = getUserDto();
+    void queryClient.setQueriesData("form/User", userDto);
+
     const user = {
-      userId: rnd,
-      user: rnd,
+      userId: userDto.id,
+      user: userDto.name,
       messageId: (+new Date()).toString(16),
       method: WS_MESSAGE_METHODS.CONNECTION,
       date: new Date(),
+      color: userDto.color,
     };
     chatApi.openChannel(user);
   }, []);
@@ -27,7 +29,7 @@ export const useMessages = () => {
         void queryClient.setQueriesData<MessageModel[]>(
           "pack/Message",
           (prev = []) => {
-            return [...prev, { ...data, text: "Присоединился" }];
+            return [...prev, data];
           }
         );
       },

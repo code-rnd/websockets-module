@@ -15,6 +15,7 @@ const broadcastTypingStart = (ws, msg) => {
         method: WS_MESSAGE_METHODS.TYPING_START,
         date: msg.date,
         text: msg.text,
+        color: msg.color,
       };
       client.send(JSON.stringify(data));
     }
@@ -35,6 +36,7 @@ const broadcastTypingEnd = (ws, msg) => {
         method: WS_MESSAGE_METHODS.TYPING_END,
         date: msg.date,
         text: msg.text,
+        color: msg.color,
       };
       client.send(JSON.stringify(data));
     }

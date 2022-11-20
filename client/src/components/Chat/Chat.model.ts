@@ -12,4 +12,5 @@ export interface MessageModel {
   method: WS_MESSAGE_METHODS;
   date: Date;
   text?: string;
+  color: string;
 }

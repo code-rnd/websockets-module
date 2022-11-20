@@ -14,6 +14,7 @@ const broadcastConnection = (ws, msg) => {
         method: WS_MESSAGE_METHODS.CONNECTION,
         date: msg.date,
 
+        color: msg.color,
         userId: msg.userId,
         user: msg.user,
       };
