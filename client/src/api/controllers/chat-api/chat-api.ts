@@ -1,9 +1,9 @@
 import { WS_MESSAGE_METHODS } from "./chat-api.enum";
-import { SubscribeMessageArgs, WebSoketMessage } from "./chat-api.model";
+import { SubscribeMessageArgs } from "./chat-api.model";
 import { ApiWebsockets } from "../../web-sockets";
 
 class ChatApi extends ApiWebsockets {
-  subscribeAllMessage<T extends WebSoketMessage>(
+  subscribeAllMessage<T extends { method: WS_MESSAGE_METHODS }>(
     args?: SubscribeMessageArgs<T>
   ) {
     const {
