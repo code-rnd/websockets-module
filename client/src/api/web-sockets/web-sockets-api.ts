@@ -5,6 +5,7 @@ import { baseUrl } from "./web-sockets.const";
 
 const wsChannel = new WebSocket(environment.REACT_APP_WS_URL || baseUrl);
 
+/** TODO: Дописать реконнект */
 export class ApiWebsockets {
   private interval: NodeJS.Timer | undefined;
   private isOpenChannel = false;
@@ -28,13 +29,15 @@ export class ApiWebsockets {
   }
 
   public postMessage<T>(props: T): void {
-    console.log(
-      "Отправка сообщения ",
-      (props as any)?.method,
-      this.getStatus()
-    );
-    const propsStringify = JSON.stringify(props);
-    return wsChannel.send(propsStringify);
+    if (this.getStatus() === WS_STATUS_CONNECT.OPEN) {
+      console.log(
+        "Отправка сообщения ",
+        (props as any)?.method,
+        this.getStatus()
+      );
+      const propsStringify = JSON.stringify(props);
+      return wsChannel.send(propsStringify);
+    }
   }
 
   protected subscribeMessage<T>(callback: (ev: MessageEvent<T>) => void) {

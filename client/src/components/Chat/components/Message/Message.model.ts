@@ -1,4 +1,4 @@
-import { MessageModel } from "../../../WsContainer";
+import { MessageModel } from "../../Chat.model";
 
 export interface MessageProps {
   isNewUser: boolean;

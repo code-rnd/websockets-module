@@ -1,32 +1,31 @@
-import {
-  FC,
-  memo,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FC, memo, useCallback, useEffect, useState } from "react";
+import { useQuery } from "react-query";
 
-import { Chat, Form, TypingLabel } from "../Chat";
-import { MessageModel, rndHash } from "../WsContainer";
-import { chatApi, WS_MESSAGE_METHODS } from "../../api/controllers";
+import { Chat, Form, TypingLabel, MessageModel } from "../Chat";
+import { chatApi, WS_MESSAGE_METHODS } from "../../api";
+import { rndHash } from "../../shared";
+import { useMessages } from "./hooks";
+
+/** TODO: Затипизировать */
+const getMessages = (e: any) => {
+  return e.meta;
+};
 
 /** TODO: вьюха для теста, все перевести в редакс или react-квери */
 export const View: FC = memo(() => {
-  // const {} = useQuery("pack/Message", () => chatApi.);
+  useMessages();
+  const messagesQuery = useQuery("pack/Message", getMessages);
+  const messages = (messagesQuery.data as MessageModel[]) || [];
 
-  const [name] = useState(rndHash);
+  const name = rndHash + "_salt";
+
   const [text, setText] = useState("");
-  const [messages, setMessages] = useState<MessageModel[]>([]);
-  const [typingUser, setTypingUser] = useState<MessageModel>();
-
-  const userId = useMemo(() => rndHash, []);
 
   const sendMessageHandler = useCallback(
     (method: WS_MESSAGE_METHODS) => {
+      console.log("TUT");
       const message: MessageModel = {
-        userId,
+        userId: name,
         user: name,
         messageId: (+new Date()).toString(16),
         method,
@@ -39,57 +38,27 @@ export const View: FC = memo(() => {
         setText("");
       }
     },
-    [userId, name, text]
+    [name, text]
   );
 
-  useLayoutEffect(() => {
-    const user = {
-      userId,
-      user: name,
-      messageId: (+new Date()).toString(16),
-      method: WS_MESSAGE_METHODS.CONNECTION,
-      date: new Date(),
-      text,
-    };
-    chatApi.openChannel(user);
-  }, []);
-
   useEffect(() => {
+    let interval: NodeJS.Timer;
     if (!text) {
       sendMessageHandler(WS_MESSAGE_METHODS.TYPING_END);
       return;
     }
 
-    const interval = setInterval(() => {
+    interval = setInterval(() => {
       sendMessageHandler(WS_MESSAGE_METHODS.TYPING_START);
     }, 500);
 
     return () => clearInterval(interval);
-  }, [text, name, sendMessageHandler]);
-
-  useEffect(() => {
-    chatApi.subscribeAllMessage<MessageModel>({
-      [WS_MESSAGE_METHODS.CONNECTION]: (data) =>
-        setMessages((prev) => [...prev, { ...data, text: "Присоединился" }]),
-      [WS_MESSAGE_METHODS.MESSAGE]: (data) =>
-        setMessages((prev) => [...prev, data]),
-      [WS_MESSAGE_METHODS.TYPING_START]: (data) => {
-        if (data.userId !== userId) {
-          setTypingUser(data);
-        }
-      },
-      [WS_MESSAGE_METHODS.TYPING_END]: () => setTypingUser(undefined),
-      [WS_MESSAGE_METHODS.NONE]: console.log,
-    });
-
-    chatApi.unsubscribeClose(console.log);
-    return () => chatApi.disconnect();
-  }, []);
+  }, [text, sendMessageHandler]);
 
   return (
     <>
-      <Chat messages={messages} userId={userId} />
-      <TypingLabel typingUser={typingUser} />
+      <Chat messages={messages} userId={name} />
+      <TypingLabel />
       <Form text={text} setText={setText} onSubmit={sendMessageHandler} />
     </>
   );

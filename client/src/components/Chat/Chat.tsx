@@ -2,8 +2,8 @@ import { FC, memo } from "react";
 
 import { Message } from "./components";
 
-import { MessageModel } from "../WsContainer";
-import { WS_MESSAGE_METHODS } from "../../api/controllers";
+import { WS_MESSAGE_METHODS } from "../../api";
+import { MessageModel } from "./Chat.model";
 
 import s from "./Chat.module.scss";
 

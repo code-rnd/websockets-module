@@ -1,1 +1,2 @@
-export * from "./web-sockets/web-sockets-api";
+export * from "./web-sockets";
+export * from "./controllers";

@@ -6,7 +6,13 @@ import { Layout } from "./shared";
 
 import "./App.style.scss";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+    },
+  },
+});
 
 export const App = () => {
   return (
