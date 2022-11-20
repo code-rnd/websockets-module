@@ -7,15 +7,17 @@ export const connectionHandler = (ws, msg) => {
 };
 const broadcastConnection = (ws, msg) => {
   aWss.clients.forEach((client) => {
-    const data = {
-      sessionId: msg.sessionId,
-      messageId: msg.messageId,
-      method: WS_MESSAGE_METHODS.CONNECTION,
-      date: msg.date,
+    if (client.id !== msg.userId) {
+      const data = {
+        sessionId: msg.sessionId,
+        messageId: msg.messageId,
+        method: WS_MESSAGE_METHODS.CONNECTION,
+        date: msg.date,
 
-      userId: msg.userId,
-      user: msg.user,
-    };
-    client.send(JSON.stringify(data));
+        userId: msg.userId,
+        user: msg.user,
+      };
+      client.send(JSON.stringify(data));
+    }
   });
 };

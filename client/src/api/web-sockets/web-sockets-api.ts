@@ -7,39 +7,16 @@ const wsChannel = new WebSocket(environment.REACT_APP_WS_URL || baseUrl);
 
 export class ApiWebsockets {
   private interval: NodeJS.Timer | undefined;
+  private isOpenChannel = false;
 
-  public connect<T>(props: T): void {
-    if (this.getStatus() === WS_STATUS_CONNECT.OPEN) {
-      return;
-    }
-
+  public openChannel<T>(props: T): void {
     wsChannel.onopen = (ev) => {
       console.log("Канал открыт ", this.getStatus());
       this.postMessage(props);
-      this.reConnect(props);
     };
   }
 
-  public reConnect<T>(props: T): void {
-    console.log("Реконнект: ", this.getStatus());
-    if (this.getStatus() === WS_STATUS_CONNECT.CLOSED) {
-      console.log("1: ", this.getStatus());
-      this.interval = setInterval(() => this.connect(props), 2_000);
-      return;
-    }
-
-    if (this.getStatus() === WS_STATUS_CONNECT.OPEN) {
-      console.log("2: ", this.getStatus());
-      clearInterval(this.interval);
-      return;
-    }
-
-    if (this.getStatus() === WS_STATUS_CONNECT.CONNECTING) {
-      console.log("3: ", this.getStatus());
-      clearInterval(this.interval);
-      return;
-    }
-  }
+  public reOpenChannel<T>(props: T): void {}
 
   public disconnect(): void {
     wsChannel.close();
@@ -51,7 +28,11 @@ export class ApiWebsockets {
   }
 
   public postMessage<T>(props: T): void {
-    console.log("Отправка сообщения ", this.getStatus());
+    console.log(
+      "Отправка сообщения ",
+      (props as any)?.method,
+      this.getStatus()
+    );
     const propsStringify = JSON.stringify(props);
     return wsChannel.send(propsStringify);
   }
@@ -60,8 +41,11 @@ export class ApiWebsockets {
     return (wsChannel.onmessage = callback);
   }
 
-  public unsubscribeClose(callback: (ev: CloseEvent) => void) {
-    return (wsChannel.onclose = callback);
+  public unsubscribeClose<T>(callback: (ev: CloseEvent) => void) {
+    return (wsChannel.onclose = (ev) => {
+      this.isOpenChannel = false;
+      callback(ev);
+    });
   }
 
   public unsubscribeMessage() {

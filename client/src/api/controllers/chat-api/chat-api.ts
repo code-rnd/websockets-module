@@ -43,7 +43,7 @@ class ChatApi extends ApiWebsockets {
           break;
       }
     };
-    this.subscribeMessage(subscribeHandler);
+    this.subscribeMessage<T>(subscribeHandler);
   }
 }
 

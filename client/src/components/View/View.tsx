@@ -4,26 +4,24 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from "react";
+
 import { Chat, Form, TypingLabel } from "../Chat";
 import { MessageModel, rndHash } from "../WsContainer";
 import { chatApi, WS_MESSAGE_METHODS } from "../../api/controllers";
 
-const mockMessage = {
-  messageId: "messageId_123",
-  sessionId: "sessionId_123",
-  method: WS_MESSAGE_METHODS.CONNECTION,
-  date: new Date(),
-};
-
 /** TODO: вьюха для теста, все перевести в редакс или react-квери */
 export const View: FC = memo(() => {
-  const [name] = useState(rndHash + "_salt");
+  // const {} = useQuery("pack/Message", () => chatApi.);
+
+  const [name] = useState(rndHash);
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<MessageModel[]>([]);
   const [typingUser, setTypingUser] = useState<MessageModel>();
-  const userId = rndHash;
+
+  const userId = useMemo(() => rndHash, []);
 
   const sendMessageHandler = useCallback(
     (method: WS_MESSAGE_METHODS) => {
@@ -45,8 +43,16 @@ export const View: FC = memo(() => {
   );
 
   useLayoutEffect(() => {
-    chatApi.connect(mockMessage);
-  });
+    const user = {
+      userId,
+      user: name,
+      messageId: (+new Date()).toString(16),
+      method: WS_MESSAGE_METHODS.CONNECTION,
+      date: new Date(),
+      text,
+    };
+    chatApi.openChannel(user);
+  }, []);
 
   useEffect(() => {
     if (!text) {
@@ -63,8 +69,8 @@ export const View: FC = memo(() => {
 
   useEffect(() => {
     chatApi.subscribeAllMessage<MessageModel>({
-      [WS_MESSAGE_METHODS.CONNECTION]: console.log,
-      [WS_MESSAGE_METHODS.DISCONNECTION]: console.log,
+      [WS_MESSAGE_METHODS.CONNECTION]: (data) =>
+        setMessages((prev) => [...prev, { ...data, text: "Присоединился" }]),
       [WS_MESSAGE_METHODS.MESSAGE]: (data) =>
         setMessages((prev) => [...prev, data]),
       [WS_MESSAGE_METHODS.TYPING_START]: (data) => {
@@ -75,17 +81,11 @@ export const View: FC = memo(() => {
       [WS_MESSAGE_METHODS.TYPING_END]: () => setTypingUser(undefined),
       [WS_MESSAGE_METHODS.NONE]: console.log,
     });
+
     chatApi.unsubscribeClose(console.log);
     return () => chatApi.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (text) {
-      sendMessageHandler(WS_MESSAGE_METHODS.TYPING_START);
-    } else {
-      sendMessageHandler(WS_MESSAGE_METHODS.TYPING_END);
-    }
-  }, [text]);
   return (
     <>
       <Chat messages={messages} userId={userId} />
